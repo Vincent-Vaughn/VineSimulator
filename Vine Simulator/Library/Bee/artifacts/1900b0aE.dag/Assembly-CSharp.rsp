@@ -345,10 +345,14 @@
 -r:"Library/Bee/artifacts/1900b0aE.dag/Unity.VSCode.Editor.ref.dll"
 -r:"Library/Bee/artifacts/1900b0aE.dag/UnityEditor.UI.ref.dll"
 -r:"Library/Bee/artifacts/1900b0aE.dag/UnityEngine.UI.ref.dll"
-"Assets/LeafScript.cs"
-"Assets/RootScript.cs"
-"Assets/StemScript.cs"
-"Assets/VineScript.cs"
+"Assets/Scripts/CameraControl.cs"
+"Assets/Scripts/EndNode.cs"
+"Assets/Scripts/GhostScript.cs"
+"Assets/Scripts/LeafScript.cs"
+"Assets/Scripts/PlaneScript.cs"
+"Assets/Scripts/RootScript.cs"
+"Assets/Scripts/StemScript.cs"
+"Assets/Scripts/VineScript.cs"
 -langversion:9.0
 
 /deterministic
