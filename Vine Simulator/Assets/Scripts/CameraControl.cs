@@ -12,6 +12,7 @@ public class CameraControl : MonoBehaviour
     public GameObject SelectedNode = null;
     public GameObject plane;
     public GameObject ghost;
+    public GameObject stem;
     
 
     void Start()
@@ -29,32 +30,77 @@ public class CameraControl : MonoBehaviour
 
         if (BuildMode)
         {
-            if (SelectedNode != null)
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
+            if (SelectedNode == null)
             {
-                plane.SetActive(true);
-                ghost.SetActive(true);
+            //wHEN THE PLAYER CLICKS in build mode, check if they clicked on a node.
+                if (Input.GetButtonDown("Fire1"))
+                {
+                    Debug.Log('f');
+                    RaycastHit raycastHit;
+                    Camera mainCamera = Camera.main;
+                    Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+
+                    if (Physics.Raycast(ray, out raycastHit, Mathf.Infinity, LayerMask.GetMask("EndNode")))
+                    {
+                        if (raycastHit.collider.transform.gameObject.GetComponent<EndNode>() != null)
+                        {
+                            Debug.Log("Hit EndNode");
+                            SelectedNode = raycastHit.collider.transform.gameObject;
+                            plane.SetActive(true);
+                            ghost.SetActive(true);
+                        }
+                        else
+                        {
+                            Debug.Log("Hit " + raycastHit.collider.transform.gameObject.name);
+                            SelectedNode = null;
+                            plane.SetActive(false);
+                            ghost.SetActive(false);
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("Hit nothing");
+                        SelectedNode = null;
+                        plane.SetActive(false);
+                        ghost.SetActive(false);
+                    }
+                }
             }
             else
             {
-                //wHEN THE PLAYER CLICKS in build mode, check if they clicked on a node.
                 if (Input.GetButtonDown("Fire1"))
                 {
                     RaycastHit raycastHit;
                     Camera mainCamera = Camera.main;
                     Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-
-                    if (Physics.Raycast(ray, out raycastHit))
+                    
+                    if (Physics.Raycast(ray, out raycastHit, Mathf.Infinity, LayerMask.GetMask("Plane")))
                     {
-                        if (raycastHit.transform.gameObject.GetComponent<StemScript>() != null)
-                        {
-                            
-                        }
+                        Debug.Log("Adding stem");
+                        //Create new stem and deselect this node
+                        GameObject newStem = Instantiate(stem, SelectedNode.transform.position, ghost.transform.rotation);
+
+                        newStem.GetComponent<StemScript>().Attach(SelectedNode.transform.parent.gameObject, ghost.GetComponent<GhostScript>().GetEndpointPos() - SelectedNode.transform.position, ghost.GetComponent<GhostScript>().makeRoot);
                     }
+
+                    SelectedNode = null;
+                    plane.SetActive(false);
+                    ghost.SetActive(false);
                 }
-
-
-                //Raycast when clicks happen. If they hit an EndNode, then set SelectedNode to this node.
             }
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
+            plane.SetActive(false);
+            ghost.SetActive(false);
+
+            SelectedNode = null;
         }
     }
 

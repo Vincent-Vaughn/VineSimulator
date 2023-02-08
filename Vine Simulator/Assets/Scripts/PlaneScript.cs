@@ -11,14 +11,20 @@ public class PlaneScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        transform.localScale = (transform.localScale / 10) * StemScript.MaxLength;
-        gameObject.SetActive(false);
+        
+    }
+
+
+    void OnEnable()
+    {
+        CameraControl cc = player.GetComponent<CameraControl>();
+        //ransform.localScale = transform.localScale * StemScript.MaxLength;
+        Debug.Log(cc.SelectedNode.transform.position);
     }
 
     // Update is called once per frame
     void Update()
     {
-
         CameraControl cc = player.GetComponent<CameraControl>();
 
         if (cc.SelectedNode != null)

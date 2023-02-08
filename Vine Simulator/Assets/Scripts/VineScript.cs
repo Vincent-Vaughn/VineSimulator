@@ -10,10 +10,8 @@ public class VineScript : MonoBehaviour
     public float NutrientProduction = 1.0f;
 
     // Must contain parent object and children
-    List<GameObject> Stems;
-    List<GameObject> Roots;
-    List<GameObject> Leaves;
-    List<GameObject> Flowers;
+    public List<GameObject> Stems;
+    public List<GameObject> Roots;
 
     // Start is called before the first frame update
     void Start()

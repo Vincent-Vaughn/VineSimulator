@@ -38,15 +38,23 @@ public class StemScript : MonoBehaviour
     public float StrengthenEnergyCost = 1.0f; // Per meter
     public float StrengthenNutrientCost = 1.0f; // Per meter
 
-    public GameObject Parent; // Stem or root object that is supporting this stem
+    public GameObject Parent = null; // Stem or root object that is supporting this stem
     public List<GameObject> Children = new List<GameObject>(); // All other things branching off of this.
-    public CharacterJoint Joint; // Joint connecting this to the parent
+    private CharacterJoint Joint; // Joint connecting this to the parent
 
     public GameObject BaseRoot = null;
-    public GameObject node;
-    public GameObject PlayerCamera;
+    public GameObject node = null;
+    public GameObject PlayerCamera = null;
+    public GameObject Vine = null;
+
+    public Material StemMaterial;
+    public Material RootMaterial;
 
     public bool isRoot = false;
+
+    private Vector3 tensor = Vector3.zero;
+
+    public float BaseWidth = 0.125f;
     // If you are a root, enable nutrient production, disable collision detection with terrain, fix position in space.
 
     //Stem creation process:
@@ -55,8 +63,8 @@ public class StemScript : MonoBehaviour
     
     void Start()
     {
-        GetComponent<Rigidbody>().mass = BaseMass * Length;
-
+        PlayerCamera = Camera.main.gameObject;
+        Joint = GetComponent<CharacterJoint>();
     }
 
     // Update is called once per frame
@@ -84,37 +92,65 @@ public class StemScript : MonoBehaviour
 
     private void OnJointBreak(float breakForce)
     {
-        SendMessageUpwards("ProcessBrokenStem", gameObject);
-        //Tell the parent that the joint just broke
-        //Set status to broken
+        Parent.GetComponent<StemScript>().NotifyJointBreak(gameObject);
+
+        foreach (GameObject ch in Children)
+        {
+            ch.GetComponent<StemScript>().NotifyJointBreak(gameObject);
+        }
+    }
+
+    private void NotifyJointBreak(GameObject notifier)
+    {
+        if (isRoot)
+        {
+            
+        }
+        else
+        {
+            //If I am not a root, and the joint is not between me and a root, then delete it.
+        }
+    }
+
+    public void Attach(GameObject parentObj, Vector3 span, bool root)
+    {
         //
-    }
+        //transform.localScale = new Vector3(1,span.magnitude,1);
+        //Debug.Log(transform.localScale);
 
-    public void AttachJoint(GameObject parentObj, Vector3 span)
-    {
-        Joint = gameObject.GetComponent<CharacterJoint>();
+        transform.GetChild(0).localScale = new Vector3(BaseWidth, span.magnitude / 2, BaseWidth);
+        transform.GetChild(0).localPosition = new Vector3(0, span.magnitude / 2, 0);
+        transform.GetChild(1).localPosition = new Vector3(0,span.magnitude,0);
+
+        parentObj.GetComponent<StemScript>().Children.Add(gameObject);
         Parent = parentObj;
-        Joint.connectedBody = parentObj.GetComponent<Rigidbody>();
-        Joint.connectedAnchor = parentObj.GetComponentInChildren<EndNode>().transform.position;
-        Joint.anchor = Vector3.zero;
-        
-        //gameObject.GetComponent<HingeJoint>().
-        //Find the end of the parent stem/root; this is the back end of this stem.
-        //You are passed a vector that is the axis of the stem ontop of the parent in world coordinates.
-        //Assume that you are already positioned in the way that VineScript wants you.
-    }
 
-    public void SetRoot(bool root)
-    {
+        Joint = gameObject.GetComponent<CharacterJoint>();
+        Joint.connectedBody = parentObj.GetComponent<Rigidbody>();
+        Joint.connectedAnchor = parentObj.GetComponentInChildren<EndNode>().transform.localPosition;
+        Joint.anchor = Vector3.zero;
+        Vine = parentObj.GetComponent<StemScript>().Vine;
+        Vine.GetComponent<VineScript>().Stems.Add(gameObject);
+        transform.SetParent(Vine.transform);
+        
         if (root)
         {
             NutrientProduction = BaseEnergyProduction;
-
+            GetComponent<Rigidbody>().freezeRotation = true;
+            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+            transform.GetChild(0).GetComponent<CapsuleCollider>().enabled = false;
+            transform.GetChild(0).GetComponent<MeshRenderer>().material = RootMaterial;
         }
         else
         {
             NutrientProduction = 0;
+            transform.GetChild(0).GetComponent<MeshRenderer>().material = StemMaterial;
         }
+
+        GetComponent<Rigidbody>().mass = span.magnitude * BaseMass;
+        Vector3 currentTensor = GetComponent<Rigidbody>().inertiaTensor;
+        GetComponent<Rigidbody>().inertiaTensor = currentTensor;
+        GetComponent<Rigidbody>().centerOfMass = new Vector3(0, span.magnitude / 2, 0);
     }
 }
 
