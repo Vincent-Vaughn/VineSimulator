@@ -35,6 +35,9 @@ public class PlaneScript : MonoBehaviour
             vertShift = Mathf.Min(vertShift, StemScript.MaxLength);
             vertShift = Mathf.Max(vertShift, -StemScript.MaxLength);
 
+            float diameter = 2 * Mathf.Sqrt(Mathf.Pow(StemScript.MaxLength, 2) - Mathf.Pow(vertShift, 2));
+
+            transform.localScale = new Vector3(diameter, transform.localScale.y, diameter);
             transform.position = nodePos + vertShift * Vector3.up;
         }
         //Scroll wheel

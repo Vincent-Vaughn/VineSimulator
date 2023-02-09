@@ -41,7 +41,7 @@ public class GhostScript : MonoBehaviour
 
             ray = new Ray(transform.position, transform.rotation * Vector3.up);
 
-            if (Physics.SphereCast(ray, 0.125f, out raycastHit, transform.localScale.y, LayerMask.GetMask("Default")))
+            if (Physics.SphereCast(ray, 0.15f, out raycastHit, transform.localScale.y, LayerMask.GetMask("Default")))
             {
                 //Debug.DrawLine(transform.position, transform.position + transform.rotation * (Vector3.up * transform.localScale.y), Color.red, 0.1f);
                 //Debug.Log("Root");

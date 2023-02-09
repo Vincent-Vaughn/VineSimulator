@@ -19,7 +19,7 @@ public class StemScript : MonoBehaviour
     public static float TorqueStrengthIncrease = 5.0f;
 
     // Mass = (Base Mass + Mass Strength Increase * Strength Level) * Length
-    public static float BaseMass = 1.0f; // Per meter
+    public static float BaseMass = 0.25f; // Per meter
     public static float MassStrengthIncrease = 0.1f; // Per meter
 
     // Energy Cost = Growth Energy Cost * Length
